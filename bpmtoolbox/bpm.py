@@ -12,27 +12,26 @@ class BPMTool:
     def __init__(self, acronym=None):
         self.acronym = acronym
 
-    def get_all_snapshots(self) -> list:
+    def get_all_snapshots(self):
         output = self.get_all_snapshots_from_bpm()
         all_snapshots = self.parse_bpm_output(output)
         return all_snapshots
 
-    def clean_snapshots(self) -> None:
+    def clean_snapshots(self):
         all_snapshots = self.get_all_snapshots()
         filtered_snapshots = self.filter_snapshots(all_snapshots)
 
         for snapshot in filtered_snapshots:
             try:
                 AdminTask.BPMSnapshotCleanup(
-                    f'[-containerAcronym {self.acronym} -containerTrackAcronym {snapshot.acronym}]')
-            except Exception as e:
-                print(f"CLEANUP ERROR\nAcronym: {snapshot.acronym}\nError:\n{str(e)}\n\n")
+                    '[-containerAcronym {} -containerTrackAcronym {}]'.format(self.acronym,snapshot.acronym ))
+            except Exception:
+                print("CLEANUP ERROR\nAcronym: {}\nError:\n{}\n\n".format(snapshot.acronym, str(Exception)))
 
-    def get_all_snapshots_from_bpm(self) -> str:
-        return AdminTask.BPMShowProcessApplication(f'[-containerAcronym {self.acronym}]')
+    def get_all_snapshots_from_bpm(self):
+        return AdminTask.BPMShowProcessApplication('[-containerAcronym {}]'.format(self.acronym))
 
-    @classmethod
-    def filter_snapshots(cls, snapshots: list) -> list:
+    def filter_snapshots(cls, snapshots):
         """Filter snapshosts based on condition"""
 
         return list(filter(lambda s: (
@@ -40,8 +39,7 @@ class BPMTool:
                 s.no_of_running_instances == '0'
         ), snapshots))
 
-    @classmethod
-    def parse_bpm_output(cls, output: str) -> list:
+    def parse_bpm_output(cls, output):
         """Output parser"""
 
         # todo check what is returned if snapshot list is empty
@@ -90,7 +88,7 @@ class BPMTool:
             for key, value in kwargs.items():
                 setattr(self, re.sub(r'[ ]', '_', key).lower(), value)
 
-        def __str__(self) -> str:
+        def __str__(self):
             return str(vars(self))
 
 
