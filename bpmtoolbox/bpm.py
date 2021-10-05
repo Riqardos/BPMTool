@@ -48,12 +48,13 @@ class BPMTool:
         if snapshots:
 
             for snapshot in snapshots:
-                dict_item = {}
-                for attribute in snapshot.split('\n'):
-                    key, value = attribute.split(': ')
-                    dict_item[key] = value
+                if snapshot != '':
+                    dict_item = {}
+                    for attribute in snapshot.split('\n'):
+                        key, value = attribute.split(': ')
+                        dict_item[key] = value
 
-                results.append(cls.SnapShot(**dict_item))
+                    results.append(cls.SnapShot(**dict_item))
 
         return results
 
