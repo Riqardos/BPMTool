@@ -24,12 +24,12 @@ class BPMTool:
         for snapshot in filtered_snapshots:
             try:
                 AdminTask.BPMSnapshotCleanup(
-                    '[-containerAcronym {} -containerTrackAcronym {}]'.format(self.acronym,snapshot.acronym ))
+                    '[-containerAcronym' + self.acronym + ' -containerTrackAcronym ' + snapshot.acronym + ']')
             except Exception:
-                print("CLEANUP ERROR\nAcronym: {}\nError:\n{}\n\n".format(snapshot.acronym, str(Exception)))
+                print("CLEANUP ERROR\nAcronym:" + snapshot.acronym + "\nError:\n" + str(Exception) + "\n\n")
 
     def get_all_snapshots_from_bpm(self):
-        return AdminTask.BPMShowProcessApplication('[-containerAcronym {}]'.format(self.acronym))
+        return AdminTask.BPMShowProcessApplication('[-containerAcronym ' + self.acronym + ' ]')
 
     def filter_snapshots(cls, snapshots):
         """Filter snapshosts based on condition"""
