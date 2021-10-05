@@ -1,7 +1,7 @@
 import re
 
 
-class BPMTool:
+class BPMApp:
     """
     BPM tool
     Functions:
@@ -43,7 +43,7 @@ class BPMTool:
         """Output parser"""
 
         # todo check what is returned if snapshot list is empty
-        snapshots = output.split('List of Snapshots:\n')[1].split('\n\n')
+        snapshots = output.replace('\t', '').split('List of Snapshots: \n')[1].split('\n\n')
         results = []
         if snapshots:
 
