@@ -24,7 +24,7 @@ class BPMTool:
         for snapshot in filtered_snapshots:
             try:
                 AdminTask.BPMSnapshotCleanup(
-                    '[-containerAcronym' + self.acronym + ' -containerTrackAcronym ' + snapshot.acronym + ']')
+                    '[-containerAcronym ' + self.acronym + ' -containerTrackAcronym ' + snapshot.acronym + ' ]')
             except Exception:
                 print("CLEANUP ERROR\nAcronym:" + snapshot.acronym + "\nError:\n" + str(Exception) + "\n\n")
 
