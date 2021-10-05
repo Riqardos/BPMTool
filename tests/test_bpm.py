@@ -60,13 +60,13 @@ Capability: Capability[Standard]
 No of running instances: 0"""
 
     def test_parse_output(self):
-        results = self.BPMTool.parse_output(self.output_2_snapshots)
+        results = self.BPMTool.parse_bpm_output(self.output_2_snapshots)
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0].name, 'sn_for_Hursley')
 
     def test_get_snapshots_to_clean(self):
-        results = self.BPMTool.parse_output(self.output_2_snapshots)
-        filtered_results = self.BPMTool.get_snapshots_to_clean(results)
+        results = self.BPMTool.parse_bpm_output(self.output_2_snapshots)
+        filtered_results = self.BPMTool.filter_snapshot(results)
         self.assertEqual(len(filtered_results), 1)
 
 
