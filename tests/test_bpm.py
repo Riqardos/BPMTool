@@ -1,5 +1,5 @@
-from unittest import TestCase
-from bpm import BPMTool
+from unittest import TestCase, main
+from bpmtoolbox.bpm import BPMTool
 
 
 class BPM(TestCase):
@@ -70,3 +70,5 @@ No of running instances: 0"""
         self.assertEqual(len(filtered_results), 1)
 
 
+if __name__ == '__main__':
+    main()
