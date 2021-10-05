@@ -19,20 +19,20 @@ class BPMTool:
 
     def clean_snapshots(self) -> None:
         all_snapshots = self.get_all_snapshots()
-        filtered_snapshots = self.filter_snapshot(all_snapshots)
+        filtered_snapshots = self.filter_snapshots(all_snapshots)
 
         for snapshot in filtered_snapshots:
             try:
                 AdminTask.BPMSnapshotCleanup(
                     f'[-containerAcronym {self.acronym} -containerTrackAcronym {snapshot.acronym}]')
             except Exception as e:
-                print(f"CLEANUP ERROR\nAcronym{snapshot}\nError:\n{str(e)}\n\n")
+                print(f"CLEANUP ERROR\nAcronym: {snapshot.acronym}\nError:\n{str(e)}\n\n")
 
     def get_all_snapshots_from_bpm(self) -> str:
         return AdminTask.BPMShowProcessApplication(f'[-containerAcronym {self.acronym}]')
 
     @classmethod
-    def filter_snapshot(cls, snapshots: list) -> list:
+    def filter_snapshots(cls, snapshots: list) -> list:
         """Filter snapshosts based on condition"""
 
         return list(filter(lambda s: (

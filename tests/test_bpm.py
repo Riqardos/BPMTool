@@ -66,7 +66,7 @@ No of running instances: 0"""
 
     def test_get_snapshots_to_clean(self):
         results = self.BPMTool.parse_bpm_output(self.output_2_snapshots)
-        filtered_results = self.BPMTool.filter_snapshot(results)
+        filtered_results = self.BPMTool.filter_snapshots(results)
         self.assertEqual(len(filtered_results), 1)
 
 
