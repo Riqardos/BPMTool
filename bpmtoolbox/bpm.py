@@ -21,15 +21,29 @@ class BPMApp:
 
     def generate_stats(self, snapshots):
         stats = {}
-        for snapshot in snapshots:
+        print(snapshots)
 
-            if snapshot.state in stats:
-                stats[snapshot.state] += 1
-                stats[snapshot.state + 'acronyms'] += [snapshot.acronym]
-            else:
-                stats[snapshot.state] = 1
-                stats[snapshot.state + 'acronyms'] = [snapshot.acronym]
-        return stats
+
+        for snapshot in snapshots:
+            try:
+                print(str(snapshot))
+                state = snapshot.state
+                state_acronyms = state + '_acronyms'
+                acronym = snapshot.acronym
+
+                if snapshot.state in stats:
+                    stats[state] += 1
+                    stats[state_acronyms] += [acronym]
+                else:
+                    stats[state] = 1
+                    stats[state_acronyms] = [acronym]
+
+                print(stats)
+
+            except Exception:
+                print(str(Exception))
+
+        return str(stats)
 
     def get_snapshots_stat(self):
         """Return list of objects"""
@@ -43,24 +57,27 @@ class BPMApp:
 
         all_snapshots = len(filtered_snapshots)
         deleted = 0
-        counter = 0
-        print("Deleting " + all_snapshots + " instances...")
+        counter = 1
+        print("Deleting " + str(all_snapshots) + " instances...")
+        print("#"*30)
         for snapshot in filtered_snapshots:
+            print("Processing " + "\t\t\t" + str(counter) + " / " + str(all_snapshots))
             try:
                 AdminTask.BPMDeleteSnapshot(
                     '[-containerAcronym ' + self.acronym + ' -containerSnapshotAcronyms ' + snapshot.acronym + ' ]')
-                deleted+=1
-                print("Deleted: " + snapshot.acronym + "\t\t\t" + str(counter) + " / " + str(all_snapshots))
+                deleted += 1
+                print("Deleted: " + snapshot.acronym)
             except:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
-                print("Skipped:" + snapshot.acronym + "\t\t\t" + str(counter) + " / " + str(all_snapshots))
+                print("Skipped:" + snapshot.acronym)
+                print("Error: " + str(exc_obj))
 
-            counter+= 1
+            print('\n\n')
+            counter += 1
 
-        print("\n\nDeleted: " + deleted)
-        print("Skipped: " + (all_snapshots-deleted))
+        print("#" * 30)
+        print("\n\nDeleted: " + str(deleted))
+        print("Skipped: " + str(all_snapshots-deleted))
 
     def get_all_snapshots_from_bpm(self):
         return AdminTask.BPMShowProcessApplication('[-containerAcronym ' + self.acronym + ' ]')
