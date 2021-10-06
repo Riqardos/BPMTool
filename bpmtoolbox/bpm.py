@@ -21,29 +21,24 @@ class BPMApp:
 
     def generate_stats(self, snapshots):
         stats = {}
-        print(snapshots)
-
 
         for snapshot in snapshots:
             try:
-                print(str(snapshot))
                 state = snapshot.state
                 state_acronyms = state + '_acronyms'
                 acronym = snapshot.acronym
 
-                if snapshot.state in stats:
+                if state in stats.keys():
                     stats[state] += 1
                     stats[state_acronyms] += [acronym]
                 else:
                     stats[state] = 1
                     stats[state_acronyms] = [acronym]
 
-                print(stats)
-
             except Exception:
                 print(str(Exception))
 
-        return str(stats)
+        return stats
 
     def get_snapshots_stat(self):
         """Return list of objects"""
@@ -59,7 +54,7 @@ class BPMApp:
         deleted = 0
         counter = 1
         print("Deleting " + str(all_snapshots) + " instances...")
-        print("#"*30)
+        print("#" * 30)
         for snapshot in filtered_snapshots:
             print("Processing " + "\t\t\t" + str(counter) + " / " + str(all_snapshots))
             try:
@@ -77,7 +72,7 @@ class BPMApp:
 
         print("#" * 30)
         print("\n\nDeleted: " + str(deleted))
-        print("Skipped: " + str(all_snapshots-deleted))
+        print("Skipped: " + str(all_snapshots - deleted))
 
     def get_all_snapshots_from_bpm(self):
         return AdminTask.BPMShowProcessApplication('[-containerAcronym ' + self.acronym + ' ]')
