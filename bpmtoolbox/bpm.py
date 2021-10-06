@@ -1,5 +1,5 @@
 import re
-import sys, os
+import sys, getopt
 
 
 class BPMApp:
@@ -19,6 +19,19 @@ class BPMApp:
         all_snapshots = self.parse_bpm_output(output)
         return all_snapshots
 
+    def get_all_snapshots_formatted(self):
+        """Print formatted info about snapshots"""
+        all_snapshots = self.get_all_snapshots()
+        print("All snapshots: \n")
+        for snap in all_snapshots:
+            print('AcronymId: ' + snap.acronym)
+            print('State: ' + snap.state)
+            print('Default: ' + snap.is_default)
+            print('Number of instances: ' + snap.no_of_running_instances)
+            print('\n')
+
+        return all_snapshots
+
     def generate_stats(self, snapshots):
         stats = {}
 
@@ -27,16 +40,18 @@ class BPMApp:
                 state = snapshot.state
                 state_acronyms = state + '_acronyms'
                 acronym = snapshot.acronym
+                no_instances = snapshot.no_of_running_instances
 
                 if state in stats.keys():
                     stats[state] += 1
-                    stats[state_acronyms] += [acronym]
+                    stats[state_acronyms] += [(acronym, no_instances)]
                 else:
                     stats[state] = 1
-                    stats[state_acronyms] = [acronym]
+                    stats[state_acronyms] = [(acronym, no_instances)]
 
             except Exception:
                 print(str(Exception))
+
 
         return stats
 
@@ -44,7 +59,12 @@ class BPMApp:
         """Return list of objects"""
         output = self.get_all_snapshots_from_bpm()
         all_snapshots = self.parse_bpm_output(output)
-        return self.generate_stats(all_snapshots)
+        stats = self.generate_stats(all_snapshots)
+        print("Stats: " + self.acronym)
+        print("Active: " + str(stats['State[Active]']) + "; " + str(stats['State[Active]_acronyms']))
+        print("Nonactive: " + str(stats['State[Inactive]']) + "; " + str(stats['State[Inactive]_acronyms']))
+
+        print("\nhelp: [(acronymId, NoRunningInstances)]")
 
     def clean_snapshots(self):
         all_snapshots = self.get_all_snapshots()
@@ -82,7 +102,8 @@ class BPMApp:
 
         return list(filter(lambda s: (
                 s.state == 'State[Inactive]' and
-                s.no_of_running_instances == '0'
+                s.no_of_running_instances == '0' and
+                s.is_default == 'false'
         ), snapshots))
 
     def parse_bpm_output(cls, output):
@@ -140,4 +161,56 @@ class BPMApp:
 
 
 if __name__ == '__main__':
-    pass
+
+
+    if len(sys.argv) != 3:
+        print("Invalid number of arguments: two argument allowed: bpm.py <acronymId> [-hsld], see --help for more info")
+        sys.exit(1)
+
+    app_acronym = sys.argv[1]
+    argv = sys.argv[2:]
+
+    # validation
+    valid_options = ['--help', '--stat', '--list', '--delete']
+    valid_options_short = list(map(lambda x: x[1:3], valid_options))
+    arg = argv[0]
+    if len(arg) == 2:
+        if arg not in valid_options_short:
+            print("Invalid argument: " + arg + ", see --help")
+            sys.exit(1)
+    else:
+        if arg not in valid_options:
+            print("Invalid argument: " + arg + ", see --help")
+            sys.exit(1)
+
+    # functions switch
+    try:
+        bpm_tool = BPMApp(app_acronym)
+        arg_trim = arg.replace('-', '')[0]
+        if arg_trim == 'h':
+            print("""
+================================================================
+HELP
+================================================================
+SYNOPSIS
+bpm.py <acronymId> [-hsld]
+
+OPTIONS
+number of allowed arguments: 2
+
+-h, --help      shows help
+-l, --list      shows list of snapshots
+-s, --stat      shows stats 
+-d, --delete    will delete all snapshots, 
+                based on condition(inactive, no_instancec=0, default=false )
+            """)
+        elif arg_trim == 's':
+            bpm_tool.get_snapshots_stat()
+        elif arg_trim == 'l':
+            bpm_tool.get_all_snapshots_formatted()
+        elif arg_trim == 'd':
+            bpm_tool.clean_snapshots()
+
+    except:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        print("Error:\n" + str(exc_obj))
